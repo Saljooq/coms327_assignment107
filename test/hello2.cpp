@@ -6,14 +6,25 @@
 #include <ncurses.h>
 using namespace std;
 
+#define BIT_SMART 0x1
+#define TELE 0x2
+#define TUN 0x4
+#define ERAT 0x8
+
+#define PICKUP 0x10
+#define DESTROY 0x20
+#define UNIQ 0x40
+#define BOSS 0x80
+
+
 class monster_desc
 {
 public:
 	string name;
 	string desc;
-	int color;
+	vector<int> color;
 	int speed[3];
-	string abil;
+	int abil;
 	int hp[3];
 	int dam[3];
 	char symb;
@@ -21,8 +32,11 @@ public:
 };
 
 string getColorString(int i);
-
+string intToAbil(int abil);
+string getColorString(int i);
 int finddice(int* ar, string s);
+int getColorint(string t);
+int get_abilities(string abil);
 
 int main(int argc, char* argv[])
 {
@@ -114,25 +128,37 @@ int main(int argc, char* argv[])
 					{
 						cout<<"color detected\n";
 						stream>>t;
-						int col;
-						if (t.compare("BLACK")==0) col = 0;
-						else if (t.compare("RED")==0) col = 1;
-						else if (t.compare("GREEN")==0) col = 2;
-						else if (t.compare("YELLOW")==0) col = 3;
-						else if (t.compare("BLUE")==0) col = 4;
-						else if (t.compare("MAGENTA")==0) col = 5;
-						else if (t.compare("CYAN")==0) col = 6;
-						else if (t.compare("WHITE")==0) col = 7;
-						else cout<<"COLOR NOT FOUNT\n";
+						while (!stream.eof())
+						{
+							m.color.push_back(getColorint(t));
+							stream>>t;
+						}
 
-						m.color = col;
-						//cout<<m.color<<endl;
+					}
+					else if (t.compare("ABIL")==0)
+					{
+						cout<<"abilities detected\n";
+						m.abil = 0;
+						stream>>t;
+						while (!stream.eof())
+						{
+							m.abil += get_abilities(t);
+							stream>>t;
+						}
+
 					}
 					else if (t.compare("NAME")==0)
 					{
 						cout<<"name detected\n";
 						stream>>t;
-						m.name = t;
+						m.name.append(t);
+						stream>>t;
+						while (!stream.eof())
+						{
+							m.name.append(" ");
+							m.name.append(t);
+							stream>>t;
+						}
 						//cout<<m.color<<endl;
 					}
 					else if (t.compare("DESC")==0)
@@ -174,7 +200,12 @@ int main(int argc, char* argv[])
 		cout<<m.name<<endl;
 		cout<<m.desc;
 		cout<<m.symb<<endl;
-		cout<<getColorString(m.color)<<endl;
+		cout<<intToAbil(m.abil)<<endl;
+		for (int k = 0; k < m.color.size(); k++)
+		{
+			cout<<getColorString(m.color[k])<<" ";
+		}
+		cout<<endl;
 		cout<<m.hp[0]<<"+"<< m.hp[1]<<"d"<<m.hp[2] <<endl;
 		cout<<m.speed[0]<<"+"<< m.speed[1]<<"d"<<m.speed[2] <<endl;
 		cout<<m.dam[0]<<"+"<< m.dam[1]<<"d"<<m.dam[2] <<endl;
@@ -221,6 +252,47 @@ string getColorString(int i)
 	else if (i == 6) return "CYAN";
 	else return "WHITE";
 }
+int getColorint(string t)
+{
+	int col;
+	if (t.compare("BLACK")==0) col = 0;
+	else if (t.compare("RED")==0) col = 1;
+	else if (t.compare("GREEN")==0) col = 2;
+	else if (t.compare("YELLOW")==0) col = 3;
+	else if (t.compare("BLUE")==0) col = 4;
+	else if (t.compare("MAGENTA")==0) col = 5;
+	else if (t.compare("CYAN")==0) col = 6;
+	else if (t.compare("WHITE")==0) col = 7;
+	else col = -1;
+	return col;
+}
+int get_abilities(string abil)
+{
+	if (abil.compare("SMART")==0) return 0x1;
+	else if (abil.compare("TELE")==0) return 0x2;
+	else if (abil.compare("TUN")==0) return 0x4;
+	else if (abil.compare("ERAT")==0) return 0x8;
+	else if (abil.compare("PICKUP")==0) return 0x10;
+	else if (abil.compare("DESTROY")==0) return 0x20;
+	else if (abil.compare("UNIQ")==0) return 0x40;
+	else if (abil.compare("BOSS")==0) return 0x80;
+	else return 0;
+}
+string intToAbil(int abil)
+{
+	string abilities = "";
+	if (abil & 0x1) abilities.append("SMART ");
+	if (abil & 0x2) abilities.append("TELE ");
+	if (abil & 0x4) abilities.append("TUN ");
+	if (abil & 0x8) abilities.append("ERAT ");
+	if (abil & 0x10) abilities.append("PICKUP ");
+	if (abil & 0x20) abilities.append("DESTROY ");
+	if (abil & 0x40) abilities.append("UNIQ ");
+	if (abil & 0x80) abilities.append("BOSS ");
+
+	return abilities;
+}
+
 
 
 // #define COLOR_BLACK	0
