@@ -1,34 +1,34 @@
 Name: Saljooq Altaf
 Net ID: saltaf
 
-Assignment 1.06
+Assignment 1.07
 
-commit f5db4c070a93180eab7b6ce145ca0027e31e41a4
+commit d0f984d9c136ce610839f9f2f5aa20a6e8947049
 Author: Saljooq <altaf.saljooq@outlook.com>
-Date:   Thu Mar 25 15:09:28 2021 -0500
+Date:   Thu Apr 1 21:47:55 2021 -0500
 
-    Added more comments to code, added the alphabet keys for moving esterick in teleport mode (numeric directions were already added)
+    Logic integrated into Assignment106 successfully, Makefile updated
 
-commit 12bc69c2ad868d1a4437a791c3686c810cb4339f
+commit 22c63c1cd5c28f67e458f72817786b271be74bbb
 Author: Saljooq <altaf.saljooq@outlook.com>
-Date:   Thu Mar 25 01:15:38 2021 -0500
+Date:   Thu Apr 1 20:23:08 2021 -0500
 
-    Added comments, and completed readme. Conducted exhaustive tests. Fixed a few warnings given by -Wall as well
+    Full name now added instead of just first, int vector implemented for color and four new methods to get color and abil created - to create to int and back to string
 
-commit 69f915f1a9b6f5be0c0614b2b400add65427a90c
+commit 5f6d9c2dd8d8741a36abde111926d0a7021cb341
 Author: Saljooq <altaf.saljooq@outlook.com>
-Date:   Wed Mar 24 00:23:55 2021 -0500
+Date:   Thu Apr 1 01:55:08 2021 -0500
 
-    porting complete, classes amended, local and global visibility with 'f' added, teleportation with 'g' added. Testing pending
+    Test code for parsing number, description and partly colors completed, along with test code for vector of monster class completed
 
-commit 71d969dbb152ac7628e997f2967dcd5aea8ec809
+commit e36051416c4a7d1c52f06acaf8a5ed1cc9b3e8c2
 Author: Saljooq <altaf.saljooq@outlook.com>
-Date:   Tue Mar 23 20:28:30 2021 -0500
+Date:   Wed Mar 31 02:02:58 2021 -0500
 
-    Staring with 105 project, porting to c++ partly completed - structs converted to classes, char* to string, and type correcting mallocs
+    test to parse text/string/int/dice conducted
 
-commit 7742e5bb79e05d60f16ee6587258176a82247e8c
+commit e57aa0c97e117906d2ee7dd7e3d3ceaa494ea374
 Author: Saljooq <75107181+Saljooq@users.noreply.github.com>
-Date:   Tue Mar 23 21:27:20 2021 -0400
+Date:   Wed Mar 31 03:00:56 2021 -0400
 
     Initial commit

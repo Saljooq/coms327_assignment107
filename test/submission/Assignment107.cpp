@@ -35,6 +35,7 @@ using namespace std;
 #define DESTROY 0x20
 #define UNIQ 0x40
 #define BOSS 0x80
+#define PASS 0x100
 
 /*the room is a struct to save the relevant coordinates and leghts of a room*/
 class room
@@ -125,7 +126,6 @@ int print_monster_desc();
 int parseMonstersDesc();
 string getColorString(int i);
 string intToAbil(int abil);
-string getColorString(int i);
 int finddice(int* ar, string s);
 int getColorint(string t);
 int get_abilities(string abil);
@@ -524,7 +524,6 @@ int main(int argc, char* argv[])
 	//this is where processing of the dungeon ends
 
 	/*the method below will help produce the desired result for 1.07*/
-	cout<<"test\n";
 	parseMonstersDesc();
 	print_monster_desc();
 	return 0;
@@ -2276,16 +2275,21 @@ int random_generator(player_node_heap** h, PC** pc, int nummon, room** rooms)
 
 	return 0;
 }
-
+/*This is used to read into the monster_desc.txt and initialize the monsters,
+they will be pushed to the monsters vector*/
 int parseMonstersDesc()
 {
-	ifstream f("monster_desc.txt");
+	string home = getenv("HOME");
+	string gamedir = ".rlg327";
+	string monst_desc_file = "monster_desc.txt";
+	string path = home + "/"+gamedir+"/"+monst_desc_file;
+	ifstream f(path);
 
 	string t,x;
 
         while(getline(f, x))
         {
-                if (x.compare("BEGIN MONSTER\r")==0)
+                if (x.compare("BEGIN MONSTER")==0)
                 {
 			monster_desc m;
 			m.desc = "";
@@ -2295,15 +2299,15 @@ int parseMonstersDesc()
                         {
                                 getline(f, x);
 
-				if (x.compare("END\r")==0) break;
+				if (x.compare("END")==0) break;
 
 				stringstream stream(x);
-				if (x.compare("\r")!=0)
-				{
+				//if (x.compare("\r")!=0)
+				//{
 					while(1)
 					{
 					stream>>t;
-					if (stream.eof()) break;
+
 
 					if (t.compare("SPEED")==0)
 					{
@@ -2346,11 +2350,11 @@ int parseMonstersDesc()
 					else if (t.compare("COLOR")==0)
 					{
 						//cout<<"color detected\n";
-						stream>>t;
+						//stream>>t;
 						while (!stream.eof())
 						{
-							m.color.push_back(getColorint(t));
 							stream>>t;
+							m.color.push_back(getColorint(t));
 						}
 
 					}
@@ -2358,11 +2362,11 @@ int parseMonstersDesc()
 					{
 						//cout<<"abilities detected\n";
 						m.abil = 0;
-						stream>>t;
+
 						while (!stream.eof())
 						{
-							m.abil += get_abilities(t);
 							stream>>t;
+							m.abil += get_abilities(t);
 						}
 
 					}
@@ -2371,12 +2375,12 @@ int parseMonstersDesc()
 						//cout<<"name detected\n";
 						stream>>t;
 						m.name.append(t);
-						stream>>t;
 						while (!stream.eof())
 						{
+							stream>>t;
 							m.name.append(" ");
 							m.name.append(t);
-							stream>>t;
+							//stream>>t;
 						}
 						//cout<<m.color<<endl;
 					}
@@ -2384,10 +2388,11 @@ int parseMonstersDesc()
 					{
 						//cout<<"description detected\n";
 						getline(f, x);
-						while(x.compare(".\r")!=0)
-						{
 
-							x = x.substr(0, x.length()-1);
+						while(x.compare(".")!=0)
+						{
+							//x = x.substr(0, x.length()-1);
+							if (x.length() > 77) x = x.substr(0, 77);
 							m.desc.append(x);
 							m.desc.append("\n");
 							getline(f, x);
@@ -2396,8 +2401,9 @@ int parseMonstersDesc()
 					}
 					else break;
 					//cout<<t<<endl;
+					if (stream.eof()) break;
 					}
-				}
+				//}
                                 //cout<<x<<endl;
                         }
                         //cout<<"\n\n------------Ending the load-------\n\n";
@@ -2457,17 +2463,19 @@ int getColorint(string t)
 	else col = -1;
 	return col;
 }
-/*This should get us the bit from the bitvector of the abilities*/
+/*This should get us the bit from the bitvector of the abilities
+and determine which ability it corresponds to and converts those to string*/
 int get_abilities(string abil)
 {
 	if (abil.compare("SMART")==0) return 0x1;
 	else if (abil.compare("TELE")==0) return 0x2;
-	else if (abil.compare("TUN")==0) return 0x4;
-	else if (abil.compare("ERAT")==0) return 0x8;
+	else if (abil.compare("TUNNEL")==0) return 0x4;
+	else if (abil.compare("ERRATIC")==0) return 0x8;
 	else if (abil.compare("PICKUP")==0) return 0x10;
 	else if (abil.compare("DESTROY")==0) return 0x20;
 	else if (abil.compare("UNIQ")==0) return 0x40;
 	else if (abil.compare("BOSS")==0) return 0x80;
+	else if (abil.compare("PASS")==0) return 0x100;
 	else return 0;
 }
 /*This takes the ability bit-vector and tells all the abilities in string by conversion - via bit-wise-operations*/
@@ -2476,36 +2484,39 @@ string intToAbil(int abil)
 	string abilities = "";
 	if (abil & 0x1) abilities.append("SMART ");
 	if (abil & 0x2) abilities.append("TELE ");
-	if (abil & 0x4) abilities.append("TUN ");
-	if (abil & 0x8) abilities.append("ERAT ");
+	if (abil & 0x4) abilities.append("TUNNEL ");
+	if (abil & 0x8) abilities.append("ERRATIC ");
 	if (abil & 0x10) abilities.append("PICKUP ");
 	if (abil & 0x20) abilities.append("DESTROY ");
 	if (abil & 0x40) abilities.append("UNIQ ");
 	if (abil & 0x80) abilities.append("BOSS ");
+	if (abil & 0x100) abilities.append("PASS ");
 
 	return abilities;
 }
+/*This method prints all the description of the monsters in the monsters vector*/
 int print_monster_desc()
 {
 	monster_desc m;
 	for (int count = 0; count < (int)monsters.size(); count++)
 	{
 		m = monsters[count];
-		cout<<"Printing monster "<<count<<endl;
+		//cout<<"Printing monster "<<count<<endl;
 		cout<<m.name<<endl;
 		cout<<m.desc;
 		cout<<m.symb<<endl;
-		cout<<intToAbil(m.abil)<<endl;
 		for (int k = 0; k < (int)m.color.size(); k++)
 		{
 			cout<<getColorString(m.color[k])<<" ";
 		}
 		cout<<endl;
-		cout<<m.hp[0]<<"+"<< m.hp[1]<<"d"<<m.hp[2] <<endl;
 		cout<<m.speed[0]<<"+"<< m.speed[1]<<"d"<<m.speed[2] <<endl;
+		cout<<intToAbil(m.abil)<<endl;
+		cout<<m.hp[0]<<"+"<< m.hp[1]<<"d"<<m.hp[2] <<endl;
 		cout<<m.dam[0]<<"+"<< m.dam[1]<<"d"<<m.dam[2] <<endl;
 		cout<<m.rrty<<endl;
-		cout<<"ending print monster "<<count<<"\n\n";
+		cout<<endl;
+		//cout<<"ending print monster "<<count<<"\n\n";
 	}
 	return 0;
 }
